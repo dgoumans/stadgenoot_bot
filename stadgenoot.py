@@ -40,7 +40,6 @@ async def listing(message):
 
 async def main(argv):
     try:
-        await message("bot live")
         if argv[0]:
             print("trying import of: " + str(argv[0]))
             with open(argv[0], 'r') as f:
@@ -53,20 +52,17 @@ async def main(argv):
 
     print("starting")
     while True:
-        print("running now: " + str(int(time.time())))
         url = 'https://aanbod.stadgenoot.nl/umbraco/WebCit/AanbodApi/GetAanbod?'+str(int(time.time()))+'&init=true&type=wonen&page=1&orderType=date&order=desc&filters=rentOrSale;Huur'
         response = requests.get(url)
         new_count = 0
         for item in response.json()["Items"]:
             if item["Id"] not in seen_listings:
                 # new listing
+                print(str(new_count) + " new listings found - https://aanbod.stadgenoot.nl/" + str(item["Id"]))
                 new_count = new_count + 1
                 await listing(item)
                 seen_listings.append(item["Id"])
-                
-        print(str(new_count) + " new listings added")
         time.sleep(10)
-
 atexit.register(exit_handler)
 if __name__ == "__main__":
     with client:
